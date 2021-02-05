@@ -151,7 +151,7 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(
         description="TrianFlow training pipeline."
     )
-    arg_parser.add_argument('-c', '--config_file', default=None, help='config file.')
+    arg_parser.add_argument('-c', '--config_file', required=True, help='path to config file.') # , default=None
     arg_parser.add_argument('-g', '--gpu', type=str, default=0, help='gpu id.')
     arg_parser.add_argument('--batch_size', type=int, default=8, help='batch size.')
     arg_parser.add_argument('--iter_start', type=int, default=0, help='starting iteration.')
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--log_interval', type=int, default=100, help='interval for printing loss.')
     arg_parser.add_argument('--test_interval', type=int, default=2000, help='interval for evaluation.')
     arg_parser.add_argument('--save_interval', type=int, default=2000, help='interval for saving models.')
-    arg_parser.add_argument('--mode', type=str, default='flow', help='training mode.')
+    arg_parser.add_argument('--mode', type=str, default='flow', help='training mode.') # TODO choices?
     arg_parser.add_argument('--model_dir', type=str, default=None, help='directory for saving models')
     arg_parser.add_argument('--prepared_save_dir', type=str, default='data_s1', help='directory name for generated training dataset')
     arg_parser.add_argument('--flow_pretrained_model', type=str, default=None, help='directory for loading flow pretrained models')
@@ -170,21 +170,23 @@ if __name__ == '__main__':
     arg_parser.add_argument('--no_test', action='store_true', help='without evaluation.')
     args = arg_parser.parse_args()
         #args.config_file = 'config/debug.yaml'
-    if args.config_file is None:
-        raise ValueError('config file needed. -c --config_file.')
+    # if args.config_file is None:
+    #     raise ValueError('config file needed. -c --config_file.')
 
     # set model
     if args.model_dir is None:
         args.model_dir = os.path.join('models', os.path.splitext(os.path.split(args.config_file)[1])[0])
-    args.model_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), args.model_dir, args.mode)
+        print('no model_dir name given, using config_file name as folder name:\n\t{}'.format(args.model_dir))
+    args.model_dir = os.path.join(os.getcwd(), args.model_dir, args.mode)
     if not os.path.exists(args.model_dir):
         os.makedirs(args.model_dir)
+        print('folder created.\n\t{}'.format(args.model_dir))
     if not os.path.exists(args.config_file):
-        raise ValueError('config file not found.')
+        raise ValueError('config file not found in the following path.\n\t{}'.format(args.config_file))
     with open(args.config_file, 'r') as f:
         cfg = yaml.safe_load(f)
     cfg['img_hw'] = (cfg['img_hw'][0], cfg['img_hw'][1])
-    cfg['log_dump_dir'] = os.path.join(args.model_dir, 'log.pkl')
+    cfg['log_dump_dir'] = os.path.join(args.model_dir, 'log.pkl') # TODO add date for each run?
     shutil.copy(args.config_file, args.model_dir)
 
     # copy attr into cfg
@@ -197,6 +199,7 @@ if __name__ == '__main__':
     if (args.multi_gpu and num_gpus <= 1) or ((not args.multi_gpu) and num_gpus > 1):
         raise ValueError('Error! the number of gpus used in the --gpu argument does not match the argument --multi_gpu.')
     if args.multi_gpu:
+        print('Using multi_gpu.')
         cfg['batch_size'] = cfg['batch_size'] * num_gpus
         cfg['num_iterations'] = int(cfg['num_iterations'] / num_gpus)
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
