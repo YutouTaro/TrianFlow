@@ -4,3 +4,8 @@
 .idea/misc.xml
 .idea/modules.xml
 .idea/TrianFlow.iml
+core/networks/structures/__pycache__/pwc_tf.cpython-36.pyc
+core/networks/structures/__pycache__/net_utils.cpython-36.pyc
+__pycache__/test.cpython-36.pyc
+*.pyc
+.idea/inspectionProfiles/Project_Default.xml
