@@ -1,0 +1,27 @@
+python train.py -c D:/GoogleDrive/datasets/kitti/TrianFlow/config/kitti.yaml --gpu 0 --mode flow --prepared_save_dir data_train/kitti_2011_09_26 --model_dir D:/GoogleDrive/datasets/trianflow_weights/try
+
+=====================================================================
+
+only colored left image is used
+for kitti 2012, it should be 'color_0'
+for kitti 2015, it should be 'image_02'
+dataset(只?)用到image_02/data
+
+'calib' for kitti 2012
+'calib_cam_to_cam' for kitti 2015
+
+train.py
+    #ln81 kitti_raw_dataset.prepare_data_mp(data_dir, stride=1)
+kitti_raw.py
+        #ln74 def prepare_data_mp(self, output_dir, stride=1):
+        #ln78 static_frames = self.collect_static_frame()
+            # ln54 def collect_static_frame(self):
+        # ln109 p = mp.Process(target=process_folder, args=(q, static_frames, test_scenes, self.data_dir, output_dir, stride))
+            # ln8 def process_folder(q, static_frames, test_scenes, data_dir, output_dir, stride=1):
+    #ln92 dataset = KITTI_Prepared(data_dir, num_scales=cfg.num_scales, img_hw=cfg.img_hw, num_iterations=(cfg.num_iterations - cfg.iter_start) * cfg.batch_size)
+    ln102         gt_flows_2012, noc_masks_2012 = load_gt_flow_kitti(cfg.gt_2012_dir, 'kitti_2012')
+core/evaluate_flow.py
+    ln60 def load_gt_flow_kitti(gt_dataset_dir, mode):
+        ln74 fun = functools.partial(read_flow_gt_worker, dir_gt)
+            ln53 def read_flow_gt_worker(dir_gt, i):
+
