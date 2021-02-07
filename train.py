@@ -100,8 +100,8 @@ def train(cfg):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=cfg.batch_size, shuffle=True, num_workers=cfg.num_workers, drop_last=False)
     if cfg.dataset == 'kitti_depth' or cfg.dataset == 'kitti_odo':
         gt_flows_2012, noc_masks_2012 = load_gt_flow_kitti(cfg.gt_2012_dir, 'kitti_2012')
-        gt_flows_2015, noc_masks_2015 = load_gt_flow_kitti(cfg.gt_2015_dir, 'kitti_2015')
-        gt_masks_2015 = load_gt_mask(cfg.gt_2015_dir)
+        # gt_flows_2015, noc_masks_2015 = load_gt_flow_kitti(cfg.gt_2015_dir, 'kitti_2015')
+        # gt_masks_2015 = load_gt_mask(cfg.gt_2015_dir)
     elif cfg.dataset == 'nyuv2':
         test_images, test_gt_depths = load_nyu_test_data(cfg.nyu_test_dir)
 
@@ -117,7 +117,7 @@ def train(cfg):
             if cfg.dataset == 'kitti_depth' or cfg.dataset == 'kitti_odo':
                 if not (cfg.mode == 'depth' or cfg.mode == 'flowposenet'):
                     eval_2012_res = test_kitti_2012(cfg, model_eval, gt_flows_2012, noc_masks_2012)
-                    eval_2015_res = test_kitti_2015(cfg, model_eval, gt_flows_2015, noc_masks_2015, gt_masks_2015, depth_save_dir=os.path.join(cfg.model_dir, 'results'))
+                    # eval_2015_res = test_kitti_2015(cfg, model_eval, gt_flows_2015, noc_masks_2015, gt_masks_2015, depth_save_dir=os.path.join(cfg.model_dir, 'results'))
                     visualizer.add_log_pack({'eval_2012_res': eval_2012_res, 'eval_2015_res': eval_2015_res})
             elif cfg.dataset == 'nyuv2':
                 if not cfg.mode == 'flow':
