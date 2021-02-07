@@ -70,13 +70,13 @@ def load_gt_flow_kitti(gt_dataset_dir, mode):
         num_gt = None
         dir_gt = None
         raise ValueError('Mode {} not found.'.format(mode))
-
+    print('loading flow images...')
     fun = functools.partial(read_flow_gt_worker, dir_gt)
     pool = multiprocessing.Pool(5)
     results = pool.imap(fun, range(num_gt), chunksize=10)
     pool.close()
     pool.join()
-
+    print('\tdone.')
     for result in results:
         gt_flows.append(result[0])
         noc_masks.append(result[1])
