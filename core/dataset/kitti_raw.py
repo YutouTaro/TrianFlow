@@ -4,6 +4,7 @@ import imageio
 from tqdm import tqdm
 import torch.multiprocessing as mp
 import pdb
+import shutil
 
 def process_folder(q, static_frames, test_scenes, data_dir, output_dir, stride=1):
     while True:
@@ -14,10 +15,11 @@ def process_folder(q, static_frames, test_scenes, data_dir, output_dir, stride=1
             static_ids = static_frames[folder]
         else:
             static_ids = []
-        scene = folder.split('/')[1]
+        # scene = folder.split(os.sep)[1]
+        date, scene = folder.split(os.sep) # originated used '/', which not work in Windows
         if scene[:-5] in test_scenes:
             continue
-        image_path = os.path.join(data_dir, folder, 'image_02/data')
+        image_path = os.path.join(data_dir, folder, 'image_02', 'data')
         dump_image_path = os.path.join(output_dir, folder)
         if not os.path.isdir(dump_image_path):
             os.makedirs(dump_image_path)
@@ -25,6 +27,7 @@ def process_folder(q, static_frames, test_scenes, data_dir, output_dir, stride=1
         
         # Note. the os.listdir method returns arbitary order of list. We need correct order.
         numbers = len(os.listdir(image_path))
+        print('processing {} '.format(folder))
         for n in range(numbers - stride):
             s_idx = n
             e_idx = s_idx + stride
@@ -37,9 +40,10 @@ def process_folder(q, static_frames, test_scenes, data_dir, output_dir, stride=1
             imageio.imsave(os.path.join(dump_image_path, '%.10d'%s_idx)+'.png', seq_images.astype('uint8'))
 
             # Write training files
-            date = folder.split('/')[0]
+            # date = folder.split(os.sep)[0] # TODO remove the assert below when it never raise error
+            assert date == folder.split(os.sep)[0]
             f.write('%s %s\n' % (os.path.join(folder, '%.10d'%s_idx)+'.png', os.path.join(date, 'calib_cam_to_cam.txt')))
-        print(folder)
+        print('\t{} done'.format(folder))
 
 
 class KITTI_RAW(object):
@@ -52,6 +56,13 @@ class KITTI_RAW(object):
         raise NotImplementedError
 
     def collect_static_frame(self):
+        """
+        return the dict of static frames
+        read lines in format 'date drive frame_id' from self.static_frames_txt,
+        and save in a dict
+            key: date/drive
+            val: '%.10d' % frame_id
+        """
         f = open(self.static_frames_txt)
         static_frames = {}
         for line in f.readlines():
@@ -64,6 +75,9 @@ class KITTI_RAW(object):
         return static_frames
     
     def collect_test_scenes(self):
+        """
+        return a list of (str)test scenes read from self.test_scenes_txt
+        """
         f = open(self.test_scenes_txt)
         test_scenes = []
         for line in f.readlines():
@@ -78,7 +92,9 @@ class KITTI_RAW(object):
         static_frames = self.collect_static_frame()
         test_scenes = self.collect_test_scenes()
         if not os.path.isfile(os.path.join(output_dir, 'train.txt')):
-            os.makedirs(output_dir)
+            if not os.path.isdir(output_dir):
+                os.makedirs(output_dir)
+                print('created folder\n\t{}'.format(output_dir))
             #f = open(os.path.join(output_dir, 'train.txt'), 'w')
             print('Preparing sequence data....')
             if not os.path.isdir(self.data_dir):
@@ -112,9 +128,10 @@ class KITTI_RAW(object):
         
         # Get calib files
         for date in os.listdir(self.data_dir):
-            command = 'cp ' + os.path.join(self.data_dir, date, 'calib_cam_to_cam.txt') + ' ' + os.path.join(output_dir, date, 'calib_cam_to_cam.txt')
-            os.system(command)
-        
+            # command = 'cp ' + os.path.join(self.data_dir, date, 'calib_cam_to_cam.txt') + ' ' + os.path.join(output_dir, date, 'calib_cam_to_cam.txt')
+            # os.system(command)
+            shutil.copyfile(os.path.join(self.data_dir, date, 'calib_cam_to_cam.txt'),
+                            os.path.join(output_dir, date))
         print('Data Preparation Finished.')
 
 
