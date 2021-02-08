@@ -160,7 +160,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--log_interval', type=int, default=100, help='interval for printing loss.')
     arg_parser.add_argument('--test_interval', type=int, default=2000, help='interval for evaluation.')
     arg_parser.add_argument('--save_interval', type=int, default=2000, help='interval for saving models.')
-    arg_parser.add_argument('--mode', type=str, default='flow', help='training mode.') # TODO choices?
+    arg_parser.add_argument('--mode', type=str, default='flow', choices=['flow', 'pose', 'pose_flow', 'depth', 'depth_pose', 'flowposenet'], help='training mode.')
     arg_parser.add_argument('--model_dir', type=str, default=None, help='directory for saving models')
     arg_parser.add_argument('--prepared_save_dir', type=str, default='data_s1', help='directory name for generated training dataset')
     arg_parser.add_argument('--flow_pretrained_model', type=str, default=None, help='directory for loading flow pretrained models')
