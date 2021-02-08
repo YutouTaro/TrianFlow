@@ -19,9 +19,10 @@ kitti_raw.py
         # ln109 p = mp.Process(target=process_folder, args=(q, static_frames, test_scenes, self.data_dir, output_dir, stride))
             # ln8 def process_folder(q, static_frames, test_scenes, data_dir, output_dir, stride=1):
     #ln92 dataset = KITTI_Prepared(data_dir, num_scales=cfg.num_scales, img_hw=cfg.img_hw, num_iterations=(cfg.num_iterations - cfg.iter_start) * cfg.batch_size)
-    ln102         gt_flows_2012, noc_masks_2012 = load_gt_flow_kitti(cfg.gt_2012_dir, 'kitti_2012')
+    #ln102         gt_flows_2012, noc_masks_2012 = load_gt_flow_kitti(cfg.gt_2012_dir, 'kitti_2012')
 core/evaluate_flow.py
-    ln60 def load_gt_flow_kitti(gt_dataset_dir, mode):
-        ln74 fun = functools.partial(read_flow_gt_worker, dir_gt)
-            ln53 def read_flow_gt_worker(dir_gt, i):
+                    #ln60 def load_gt_flow_kitti(gt_dataset_dir, mode):
+                        #ln74 fun = functools.partial(read_flow_gt_worker, dir_gt)
+                            #ln53 def read_flow_gt_worker(dir_gt, i):
+train.py
 
