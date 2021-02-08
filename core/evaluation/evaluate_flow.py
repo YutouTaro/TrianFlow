@@ -51,10 +51,15 @@ def scale_intrinsics(mat, sx, sy):
     return out
 
 def read_flow_gt_worker(dir_gt, i):
+    """
+    read i-th images from "flow_occ" and "flow_noc" folder under directory dir_gt
+    and return the two images
+    """
     flow_true = read_flow_png(
         os.path.join(dir_gt, "flow_occ", str(i).zfill(6) + "_10.png"))
     flow_noc_true = read_flow_png(
         os.path.join(dir_gt, "flow_noc", str(i).zfill(6) + "_10.png"))
+    print('\tloaded {:06d}'.format(i))
     return flow_true, flow_noc_true[:, :, 2]
 
 def load_gt_flow_kitti(gt_dataset_dir, mode):
