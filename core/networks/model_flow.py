@@ -330,7 +330,7 @@ class Model_flow(nn.Module):
         feature_list_1, feature_list_2 = self.fpyramid(img1), self.fpyramid(img2)
         optical_flows = self.pwc_model(feature_list_1, feature_list_2, [img_h, img_w])
         optical_flows_rev = self.pwc_model(feature_list_2, feature_list_1, [img_h, img_w])
-        
+        # TODO can the optical_flow of im1->im2 and im2->im1 be done at once?
         # get occlusion masks
         img2_visible_masks, img1_visible_masks = self.get_visible_masks(optical_flows, optical_flows_rev)
         # get consistent masks
