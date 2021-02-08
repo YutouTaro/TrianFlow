@@ -14,7 +14,7 @@ class KITTI_2012(KITTI_Prepared):
     def __init__(self, data_dir, img_hw=(256, 832), init=True):
         self.data_dir = data_dir
         self.img_hw = img_hw
-        self.num_total = 194
+        self.num_total = 50 #194 for time saveing
         if init:
             self.data_list = self.get_data_list()
 
