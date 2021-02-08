@@ -59,17 +59,17 @@ def read_flow_gt_worker(dir_gt, i):
         os.path.join(dir_gt, "flow_occ", str(i).zfill(6) + "_10.png"))
     flow_noc_true = read_flow_png(
         os.path.join(dir_gt, "flow_noc", str(i).zfill(6) + "_10.png"))
-    print('\tloaded {:06d}'.format(i))
+    # print('\tloaded {:06d}'.format(i))
     return flow_true, flow_noc_true[:, :, 2]
 
 def load_gt_flow_kitti(gt_dataset_dir, mode):
     gt_flows = []
     noc_masks = []
     if mode == "kitti_2012":
-        num_gt = 194
+        num_gt = 50 #194  pick a few for time-saving
         dir_gt = gt_dataset_dir
     elif mode == "kitti_2015":
-        num_gt = 200
+        num_gt = 50 #200  pick a few for time-saving
         dir_gt = gt_dataset_dir
     else:
         num_gt = None
