@@ -14,6 +14,9 @@ import torch.nn.functional as F
 #from spatial_correlation_sampler import spatial_correlation_sample
 
 class PWC_tf(nn.Module):
+    """
+    adopted from PWC-Net
+    """
     def __init__(self, md=4):
         super(PWC_tf, self).__init__()
         self.corr = self.corr_naive
