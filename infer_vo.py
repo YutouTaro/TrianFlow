@@ -168,6 +168,7 @@ class infer_vo():
         K_inv = np.linalg.inv(self.cam_intrinsics)
         if self.traj_txt is not None:
             fout = open(self.traj_txt, self.traj_txt_type)
+        pnp_frames = []
         for i in tqdm(range(seq_len-1)):
             img1, img2 = images[i], images[i+1]
             depth_match, depth1, depth2 = self.get_prediction(img1, img2, model, K, K_inv, match_num=5000)
@@ -180,7 +181,8 @@ class infer_vo():
                 rel_pose[:3,3:] = flow_pose[:3,3:] * scale
             
             if np.linalg.norm(flow_pose[:3,3:]) == 0 or scale == -1:
-                print('{:04} PnP'.format(i))
+                # print('{:04} PnP'.format(i))
+                pnp_frames.append(i)
                 pnp_pose = self.solve_pose_pnp(depth_match[:,:2], depth_match[:,2:], depth1)
                 rel_pose = pnp_pose
 
@@ -192,6 +194,13 @@ class infer_vo():
                 pose = pose.flatten()[:12]  # [3x4]
                 line = " ".join([str(j) for j in pose])
                 fout.write(line + '\n')
+
+        # print frames used pnp
+        print('frames used pnp:')
+        for num, frame in enumerate(pnp_frames):
+            print('{:04d} '.format(frame), end='')
+            if num+1 % 5 == 0:
+                print()
         fout.close()
         return poses
     
