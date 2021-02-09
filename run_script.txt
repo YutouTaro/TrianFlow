@@ -9,7 +9,7 @@ CONFIG: D:\GoogleDrive\datasets\kitti\TrianFlow\config\kitti-PC.yaml, mode: flow
 
 ##python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-PC.yaml --gpu 0 --traj_save_dir_txt D:\Datasets\kitti\dataset\sequences\traj_save --sequences_root_dir D:\Datasets\kitti\dataset\sequences --sequence 01 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
 python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-PC.yaml --gpu 0 --traj_save_dir_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --sequences_root_dir D:\Datasets\kitti\dataset\sequences --sequence 00 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
-python .\core\evaluation\eval_odom.py --gt_txt [path\to\your\groundtruth\poses\txt] --result_txt [path\to\your\prediction\txt] --seq [sequence id to evaluate]
+python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\00\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --seq 00
 
 =====================================================================
 
