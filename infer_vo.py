@@ -121,7 +121,6 @@ class infer_vo():
         num = len(os.listdir(image_dir))
         images = []
         for i in range(num):
-            image = cv2.imread(os.path.join(image_dir, '%.6d'%i)+'.png')
             img_name = os.path.join(image_dir, '%.6d'%i)+'.png'
             if not os.path.isfile(img_name):
                 print('image not found\n\t{}'.format(img_name))
