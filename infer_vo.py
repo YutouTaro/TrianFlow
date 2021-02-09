@@ -14,6 +14,7 @@ import yaml
 import warnings
 import copy
 from collections import OrderedDict
+from tqdm import tqdm
 warnings.filterwarnings("ignore")
 
 def save_traj(path, poses):
