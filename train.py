@@ -119,6 +119,7 @@ def train(cfg):
                 if not (cfg.mode == 'depth' or cfg.mode == 'flowposenet'):
                     eval_2012_res = test_kitti_2012(cfg, model_eval, gt_flows_2012, noc_masks_2012)
                     # eval_2015_res = test_kitti_2015(cfg, model_eval, gt_flows_2015, noc_masks_2015, gt_masks_2015, depth_save_dir=os.path.join(cfg.model_dir, 'results'))
+                    visualizer.add_log_pack({'eval_2012_res': eval_2012_res})
                     # visualizer.add_log_pack({'eval_2012_res': eval_2012_res, 'eval_2015_res': eval_2015_res})
             elif cfg.dataset == 'nyuv2':
                 if not cfg.mode == 'flow':
