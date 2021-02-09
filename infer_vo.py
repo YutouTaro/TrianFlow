@@ -74,9 +74,20 @@ def cv_triangulation(matches, pose):
     return points1, points2
 
 class infer_vo():
-    def __init__(self, seq_id, sequences_root_dir):
+    def __init__(self, seq_id, sequences_root_dir, traj_txt=None):
         self.img_dir = sequences_root_dir
         #self.img_dir = '/home4/zhaow/data/kitti_odometry/sampled_s4_sequences/'
+        self.traj_txt = traj_txt
+        if self.traj_txt is not None:
+            folder = os.path.split(self.traj_txt)[0]
+            if not os.path.isdir(folder):
+                os.mkdir(folder)
+                print('folder created\n\t{}'.format(folder))
+            if os.path.isfile(self.traj_txt):
+                print('traj_txt already exists, appending to the file\n\t{}'.format(self.traj_txt))
+                self.traj_txt_type = 'a'
+            else:
+                self.traj_txt_type = 'w'
         self.seq_id = seq_id
         self.raw_img_h = 370.0#320
         self.raw_img_w = 1226.0#1024
@@ -120,7 +131,7 @@ class infer_vo():
         image_dir = os.path.join(seq_dir, 'image_2')
         num = len(os.listdir(image_dir))
         images = []
-        for i in range(num):
+        for i in tqdm(range(num)):
             img_name = os.path.join(image_dir, '%.6d'%i)+'.png'
             if not os.path.isfile(img_name):
                 print('image not found\n\t{}'.format(img_name))
@@ -154,7 +165,9 @@ class infer_vo():
         seq_len = len(images)
         K = self.cam_intrinsics
         K_inv = np.linalg.inv(self.cam_intrinsics)
-        for i in range(seq_len-1):
+        if self.traj_txt is not None:
+            fout = open(self.traj_txt, self.traj_txt_type)
+        for i in tqdm(range(seq_len-1)):
             img1, img2 = images[i], images[i+1]
             depth_match, depth1, depth2 = self.get_prediction(img1, img2, model, K, K_inv, match_num=5000)
             
@@ -166,14 +179,19 @@ class infer_vo():
                 rel_pose[:3,3:] = flow_pose[:3,3:] * scale
             
             if np.linalg.norm(flow_pose[:3,3:]) == 0 or scale == -1:
-                print('PnP '+str(i))
+                print('{:04} PnP'.format(i))
                 pnp_pose = self.solve_pose_pnp(depth_match[:,:2], depth_match[:,2:], depth1)
                 rel_pose = pnp_pose
 
             global_pose[:3,3:] = np.matmul(global_pose[:3,:3], rel_pose[:3,3:]) + global_pose[:3,3:]
             global_pose[:3,:3] = np.matmul(global_pose[:3,:3], rel_pose[:3,:3])
             poses.append(copy.deepcopy(global_pose))
-            print(i)
+            if self.traj_txt is not None:
+                pose = copy.deepcopy(global_pose)
+                pose = pose.flatten()[:12]  # [3x4]
+                line = " ".join([str(j) for j in pose])
+                fout.write(line)
+        fout.close()
         return poses
     
     def normalize_coord(self, xy, K):
@@ -330,11 +348,11 @@ if __name__ == '__main__':
     print('Model Loaded.')
 
     print('Testing VO.')
-    vo_test = infer_vo(args.sequence, args.sequences_root_dir)
+    vo_test = infer_vo(args.sequence, args.sequences_root_dir, args.traj_save_dir_txt)
     images = vo_test.load_images()
     print('Images Loaded. Total ' + str(len(images)) + ' images found.')
     poses = vo_test.process_video(images, model)
     print('Test completed.')
 
-    traj_txt = args.traj_save_dir_txt
-    save_traj(traj_txt, poses)
+    # traj_txt = args.traj_save_dir_txt
+    # save_traj(traj_txt, poses)
