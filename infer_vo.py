@@ -191,7 +191,7 @@ class infer_vo():
                 pose = copy.deepcopy(global_pose)
                 pose = pose.flatten()[:12]  # [3x4]
                 line = " ".join([str(j) for j in pose])
-                fout.write(line)
+                fout.write(line + '\n')
         fout.close()
         return poses
     
@@ -350,6 +350,7 @@ if __name__ == '__main__':
 
     print('Testing VO.')
     vo_test = infer_vo(args.sequence, args.sequences_root_dir, args.traj_save_dir_txt)
+    print('Loading images...')
     images = vo_test.load_images()
     print('Images Loaded. Total ' + str(len(images)) + ' images found.')
     poses = vo_test.process_video(images, model)
