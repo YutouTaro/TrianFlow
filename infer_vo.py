@@ -122,6 +122,11 @@ class infer_vo():
         images = []
         for i in range(num):
             image = cv2.imread(os.path.join(image_dir, '%.6d'%i)+'.png')
+            img_name = os.path.join(image_dir, '%.6d'%i)+'.png'
+            if not os.path.isfile(img_name):
+                print('image not found\n\t{}'.format(img_name))
+                continue
+            image = cv2.imread(img_name)
             image = cv2.resize(image, (new_img_w, new_img_h))
             images.append(image)
         return images
