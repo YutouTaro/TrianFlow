@@ -87,6 +87,8 @@ class infer_vo():
             if os.path.isfile(self.traj_txt):
                 print('traj_txt already exists, appending to the file\n\t{}'.format(self.traj_txt))
                 self.traj_txt_type = 'a'
+                with open(self.traj_txt, self.traj_txt_type) as f:
+                    f.write('\n' + '='*20 + '\n')
             else:
                 self.traj_txt_type = 'w'
         self.seq_id = seq_id
