@@ -54,6 +54,26 @@ model_flow.py
                     #ln111     def _meshgrid(height, width):
 
 
+# ln132 loss_pack = model(inputs)
+model_flow.py
+    ln319     def forward(self, inputs, output_flow=False, use_flow_loss=True):
+        #ln330         feature_list_1, feature_list_2 = self.fpyramid(img1), self.fpyramid(img2)
+            #ln154         self.fpyramid = FeaturePyramid()
+        ln335 img2_visible_masks, img1_visible_masks = self.get_visible_masks(optical_flows, optical_flows_rev)
+        ln185     def get_visible_masks(self, optical_flows, optical_flows_rev):
+            ln191 img2_visible_masks.append(self.get_occlusion_mask_from_flow(shape, optical_flow))
+            ln169 def get_occlusion_mask_from_flow(self, tensor_size, flow):
+                ln172         occ_mask = transformerFwd(mask.permute(0,2,3,1), flow.permute(0,2,3,1), out_size=[h,w]).permute(0,3,1,2)
+                ln12 def transformerFwd(
+                    ln147 output = _transform(flo, U, out_size)
+                    ln119     def _transform(flo, input_dim, out_size):
+                        #ln127 x_s, y_s = _meshgrid(out_height, out_width)
+                        #ln111     def _meshgrid(height, width):
+                    ln140         input_transformed = _interpolate(input_dim, x_t_flat, y_t_flat, out_size)
+                    ln38     def _interpolate(im, x, y, out_size):
+
+
+                    
 core/networks/structures/
 FeaturePyramid - feature_pyramid.py
     12层，输出偶数层的结果(共6层)

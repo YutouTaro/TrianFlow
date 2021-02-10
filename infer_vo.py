@@ -27,7 +27,7 @@ def save_traj(path, poses):
         pose = poses[i].flatten()[:12] # [3x4]
         line = " ".join([str(j) for j in pose])
         f.write(line + '\n')
-    print('Trajectory Saved.')
+    print('Trajectory Saved to file\n\t{}'.format(path))
 
 def projection(xy, points, h_max, w_max):
     # Project the triangulation points to depth map. Directly correspondence mapping rather than projection.
@@ -174,14 +174,14 @@ class infer_vo():
         for i in tqdm(range(seq_len-1)):
             img1, img2 = images[i], images[i+1]
             depth_match, depth1, depth2 = self.get_prediction(img1, img2, model, K, K_inv, match_num=5000)
-            
+
             rel_pose = np.eye(4)
             flow_pose = self.solve_pose_flow(depth_match[:,:2], depth_match[:,2:])
             rel_pose[:3,:3] = copy.deepcopy(flow_pose[:3,:3])
             if np.linalg.norm(flow_pose[:3,3:]) != 0:
                 scale = self.align_to_depth(depth_match[:,:2], depth_match[:,2:], flow_pose, depth2)
                 rel_pose[:3,3:] = flow_pose[:3,3:] * scale
-            
+
             if np.linalg.norm(flow_pose[:3,3:]) == 0 or scale == -1:
                 # print('{:04} PnP'.format(i))
                 pnp_frames.append(i)
