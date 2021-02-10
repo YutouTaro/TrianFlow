@@ -196,7 +196,8 @@ class infer_vo():
                 fout.write(line + '\n')
 
         # print frames used pnp
-        print('frames used pnp:')
+        len_pnp = len(pnp_frames)
+        print('frames used pnp: {}/{} {:2.1f}%'.format(len_pnp, seq_len, len_pnp/seq_len*100 ))
         for num, frame in enumerate(pnp_frames):
             print('{:04d} '.format(frame), end='')
             if num+1 % 5 == 0:
