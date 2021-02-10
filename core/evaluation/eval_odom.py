@@ -196,13 +196,13 @@ class KittiEvalOdom():
         return ave_t_err, ave_r_err
 
     def plotPath(self, seq, poses_gt, poses_result):
-        plot_keys = ["Ground Truth", "Ours"]
+        plot_keys = ["Ground Truth", "TrianFlow"]
         fontsize_ = 20
         plot_num =-1
 
         poses_dict = {}
         poses_dict["Ground Truth"] = poses_gt
-        poses_dict["Ours"] = poses_result
+        poses_dict["TrianFlow"] = poses_result
 
         fig = plt.figure()
         ax = plt.gca()
