@@ -11,7 +11,7 @@ CONFIG: D:\GoogleDrive\datasets\kitti\TrianFlow\config\kitti-PC.yaml, mode: flow
 python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-PC.yaml --gpu 0 --traj_save_dir_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --sequences_root_dir D:\Datasets\kitti\dataset\sequences --sequence 00 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
 python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\00\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --seq 00
 
-python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-NTU-PC.yaml --gpu 0 --traj_save_dir_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --sequences_root_dir D:\GoogleDrive\datasets\Pioneer\NTU --sequence DJI_0017 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
+python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-NTU-PC.yaml --gpu 0 --traj_save_dir_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --sequences_root_dir D:\Datasets\Pioneer\dataset\sequences --sequence DJI_0017 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
 python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\00\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --seq 00
 
 =====================================================================
@@ -59,21 +59,36 @@ model_flow.py
     ln319     def forward(self, inputs, output_flow=False, use_flow_loss=True):
         #ln330         feature_list_1, feature_list_2 = self.fpyramid(img1), self.fpyramid(img2)
             #ln154         self.fpyramid = FeaturePyramid()
-        ln335 img2_visible_masks, img1_visible_masks = self.get_visible_masks(optical_flows, optical_flows_rev)
-        ln185     def get_visible_masks(self, optical_flows, optical_flows_rev):
-            ln191 img2_visible_masks.append(self.get_occlusion_mask_from_flow(shape, optical_flow))
-            ln169 def get_occlusion_mask_from_flow(self, tensor_size, flow):
-                ln172         occ_mask = transformerFwd(mask.permute(0,2,3,1), flow.permute(0,2,3,1), out_size=[h,w]).permute(0,3,1,2)
-                ln12 def transformerFwd(
-                    ln147 output = _transform(flo, U, out_size)
-                    ln119     def _transform(flo, input_dim, out_size):
+        #ln335 img2_visible_masks, img1_visible_masks = self.get_visible_masks(optical_flows, optical_flows_rev)
+        #ln185     def get_visible_masks(self, optical_flows, optical_flows_rev):
+            #ln191 img2_visible_masks.append(self.get_occlusion_mask_from_flow(shape, optical_flow))
+            #ln169 def get_occlusion_mask_from_flow(self, tensor_size, flow):
+                #ln172         occ_mask = transformerFwd(mask.permute(0,2,3,1), flow.permute(0,2,3,1), out_size=[h,w]).permute(0,3,1,2)
+                #ln12 def transformerFwd(
+                    #ln147 output = _transform(flo, U, out_size)
+                    #ln119     def _transform(flo, input_dim, out_size):
                         #ln127 x_s, y_s = _meshgrid(out_height, out_width)
                         #ln111     def _meshgrid(height, width):
-                    ln140         input_transformed = _interpolate(input_dim, x_t_flat, y_t_flat, out_size)
-                    ln38     def _interpolate(im, x, y, out_size):
+
+                        #ln140         input_transformed = _interpolate(input_dim, x_t_flat, y_t_flat, out_size)
+                        #(skipped) ln38     def _interpolate(im, x, y, out_size):
+        #ln337         img2_consis_masks, img1_consis_masks, fwd_flow_diff_pyramid, bwd_flow_diff_pyramid = self.get_consistent_masks(optical_flows, optical_flows_rev)
+        #ln195     def get_consistent_masks(self, optical_flows, optical_flows_rev):
+            #ln201             bwd2fwd_flow = warp_flow(optical_flow_rev, optical_flow)
+net_utils.py
+            #ln16 def warp_flow(x, flow, use_mask=False):
+        #ln367         loss_pack['loss_pixel'] = self.compute_loss_pixel(img1_pyramid, img1_warped_pyramid, img1_valid_masks) + \
+        #ln235     def compute_loss_pixel(self, img_pyramid, img_warped_pyramid, occ_mask_list):
+
+        ln369 loss_pack['loss_ssim'] = self.compute_loss_ssim(img1_pyramid, img1_warped_pyramid, img1_valid_masks) + \
+        ln246     def compute_loss_ssim(self, img_pyramid, img_warped_pyramid, occ_mask_list):
+            ln252             ssim = SSIM(img * occ_mask_pad, img_warped * occ_mask_pad)
+ssim.py     ln4 def SSIM(x, y):
+        ln371 loss_pack['loss_flow_smooth'] = self.compute_loss_flow_smooth(optical_flows, img1_pyramid) + \
+        ln275     def compute_loss_flow_smooth(self, optical_flows, img_pyramid):
 
 
-                    
+
 core/networks/structures/
 FeaturePyramid - feature_pyramid.py
     12层，输出偶数层的结果(共6层)
