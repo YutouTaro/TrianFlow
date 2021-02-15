@@ -91,6 +91,18 @@ class infer_vo():
                     f.write('\n' + '='*20 + '\n')
             else:
                 self.traj_txt_type = 'w'
+        else:
+            print('traj_txt not detected, no trajectory file will be recorded.')
+        dir_log = os.path.split(self.traj_txt)
+        self.log_pnp = os.path.join(dir_log, 'PnP frames.txt')
+        if os.path.isfile(self.log_pnp):
+            opentype = 'a'
+        else:
+            opentype = 'w'
+        with open(self.log_pnp, opentype) as file_log:
+            file_log.write('\n' + '='*20 + '\n')
+
+
         self.seq_id = seq_id
         self.raw_img_h = 370.0#320
         self.raw_img_w = 1226.0#1024
@@ -170,6 +182,7 @@ class infer_vo():
         K_inv = np.linalg.inv(self.cam_intrinsics)
         if self.traj_txt is not None:
             fout = open(self.traj_txt, self.traj_txt_type)
+        flog = open(self.log_pnp, 'a')
         pnp_frames = []
         for i in tqdm(range(seq_len-1)):
             img1, img2 = images[i], images[i+1]
@@ -184,6 +197,7 @@ class infer_vo():
 
             if np.linalg.norm(flow_pose[:3,3:]) == 0 or scale == -1:
                 # print('{:04} PnP'.format(i))
+                flog.write('{:06d}\n'.format(i))
                 pnp_frames.append(i)
                 pnp_pose = self.solve_pose_pnp(depth_match[:,:2], depth_match[:,2:], depth1)
                 rel_pose = pnp_pose
@@ -199,12 +213,16 @@ class infer_vo():
 
         # print frames used pnp
         len_pnp = len(pnp_frames)
-        print('frames used pnp: {}/{} {:2.1f}%'.format(len_pnp, seq_len, len_pnp/seq_len*100 ))
+        str_print = 'frames used pnp: {}/{} {:2.1f}%'.format(len_pnp, seq_len, len_pnp/seq_len*100 )
+        print(str_print)
+        flog.write(str_print + '\n')
         for num, frame in enumerate(pnp_frames):
             print('{:04d} '.format(frame), end='')
             if num+1 % 5 == 0:
-                print()
+                print('\n')
+        print('the pnp frames also saved in\n\t{}'.format(self.log_pnp))
         fout.close()
+        flog.close()
         return poses
     
     def normalize_coord(self, xy, K):
