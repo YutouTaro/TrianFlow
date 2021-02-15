@@ -207,8 +207,10 @@ class Model_flow(nn.Module):
             bwd_flow_diff_pyramid.append(bwd_flow_diff)
 
             # flow consistency condition
-            bwd_consist_bound = torch.max(self.flow_consist_beta * self.get_flow_norm(optical_flow_rev), torch.from_numpy(np.array([self.flow_consist_alpha])).float().to(optical_flow_rev.get_device()))
-            fwd_consist_bound = torch.max(self.flow_consist_beta * self.get_flow_norm(optical_flow), torch.from_numpy(np.array([self.flow_consist_alpha])).float().to(optical_flow.get_device()))
+            bwd_consist_bound = torch.max(self.flow_consist_beta * self.get_flow_norm(optical_flow_rev),
+                                          torch.from_numpy(np.array([self.flow_consist_alpha])).float().to(optical_flow_rev.get_device()))
+            fwd_consist_bound = torch.max(self.flow_consist_beta * self.get_flow_norm(optical_flow),
+                                          torch.from_numpy(np.array([self.flow_consist_alpha])).float().to(optical_flow.get_device()))
             with torch.no_grad():
                 noc_masks_img2 = (self.get_flow_norm(bwd_flow_diff) < bwd_consist_bound).float()
                 noc_masks_img1 = (self.get_flow_norm(fwd_flow_diff) < fwd_consist_bound).float()
