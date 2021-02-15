@@ -93,7 +93,7 @@ class infer_vo():
                 self.traj_txt_type = 'w'
         else:
             print('traj_txt not detected, no trajectory file will be recorded.')
-        dir_log = os.path.split(self.traj_txt)
+        dir_log = os.path.split(self.traj_txt)[0]
         self.log_pnp = os.path.join(dir_log, 'PnP frames.txt')
         if os.path.isfile(self.log_pnp):
             opentype = 'a'
