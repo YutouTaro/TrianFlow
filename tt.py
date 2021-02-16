@@ -75,35 +75,64 @@
 #                 copy_files_in_folder(dir_data_folder, dir_gdrive_folder)
 
 
-### NTU dataset ground truth to kitti format (flattened 3*4 matrix)
-import numpy as np
-from scipy.spatial.transform import Rotation as R
-# r = R.from_quat([1,0,0,0])
-# print(r.as_matrix())
-
-gt_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_all.txt'
-kitti_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
-# # result_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
+# ### NTU dataset ground truth to kitti format (flattened 3*4 matrix)
+# import numpy as np
+# from scipy.spatial.transform import Rotation as R
+# # r = R.from_quat([1,0,0,0])
+# # print(r.as_matrix())
 #
-# #load gt data
-# gt_pose = []
-f_kitti = open(kitti_txt,'w')
-with open(gt_txt, 'r') as f_gt:
-    for line in f_gt.readlines():
-        if 'DJI_0017' not in line:
-            continue
-        pose = [float(v) for v in line.strip().split(' ')[1:]]
-        # print(pose)
-        xyz = np.array(pose[:3]).reshape(-1,1)
-        wpqr = np.append(pose[4:], pose[3])
-        # print(xyz, wpqr)
-        r = R.from_quat(wpqr)
-        mat_r = r.as_matrix()
-        # print(mat_r)
-        mat_T = np.concatenate((mat_r, xyz), 1).flatten()
-        # print(mat_T)
-        t_str = ' '.join([str(v) for v in mat_T])
-        # print(t_str)
-        f_kitti.write(t_str + '\n')
-        # break
-f_kitti.close()
+# gt_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_all.txt'
+# kitti_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
+# # # result_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
+# #
+# # #load gt data
+# # gt_pose = []
+# f_kitti = open(kitti_txt,'w')
+# with open(gt_txt, 'r') as f_gt:
+#     for line in f_gt.readlines():
+#         if 'DJI_0017' not in line:
+#             continue
+#         pose = [float(v) for v in line.strip().split(' ')[1:]]
+#         # print(pose)
+#         xyz = np.array(pose[:3]).reshape(-1,1)
+#         wpqr = np.append(pose[4:], pose[3])
+#         # print(xyz, wpqr)
+#         r = R.from_quat(wpqr)
+#         mat_r = r.as_matrix()
+#         # print(mat_r)
+#         mat_T = np.concatenate((mat_r, xyz), 1).flatten()
+#         # print(mat_T)
+#         t_str = ' '.join([str(v) for v in mat_T])
+#         # print(t_str)
+#         f_kitti.write(t_str + '\n')
+#         # break
+# f_kitti.close()
+
+### plot traj from kitti format log
+from matplotlib import pyplot as plt
+import numpy as np
+# file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\00_kitti_pose.txt'
+file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
+# file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
+
+fontsize_ = 20
+fig = plt.figure()
+ax = plt.gca()
+ax.set_aspect('equal')
+pose =[]
+with open(file, 'r') as f:
+    for line in f.readlines():
+        p = [float(v) for v in line.strip().split()]
+        pose.append([p[3], p[7], p[11]])
+        # plt.plot(pose[3], pose[7], label='gt')
+        # print(pose[3], pose[7])
+pose = np.array(pose)
+plt.plot(pose[:,1], pose[:,2], label='gt')
+plt.legend(loc="upper right", prop={'size': fontsize_})
+plt.xticks(fontsize=fontsize_)
+plt.yticks(fontsize=fontsize_)
+plt.xlabel('x (m)', fontsize=fontsize_)
+plt.ylabel('y (m)', fontsize=fontsize_)
+fig.set_size_inches(10, 10)
+plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\c_yz_plot.pdf", bbox_inches='tight', pad_inches=0)
+# plt.show()
