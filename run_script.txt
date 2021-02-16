@@ -12,7 +12,9 @@ python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\
 python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\00\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --seq 00
 
 python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-NTU-PC.yaml --gpu 0 --traj_save_dir_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --sequences_root_dir D:\Datasets\Pioneer\dataset\sequences --sequence DJI_0017 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
-python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\00\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --seq 00
+
+# tested in XPS
+python .\core\evaluation\eval_odom.py --gt_txt C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt --result_txt C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --seq DJI_0017
 
 =====================================================================
 
