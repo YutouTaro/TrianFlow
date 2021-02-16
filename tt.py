@@ -75,3 +75,35 @@
 #                 copy_files_in_folder(dir_data_folder, dir_gdrive_folder)
 
 
+### NTU dataset ground truth to kitti format (flattened 3*4 matrix)
+import numpy as np
+from scipy.spatial.transform import Rotation as R
+# r = R.from_quat([1,0,0,0])
+# print(r.as_matrix())
+
+gt_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_all.txt'
+kitti_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
+# # result_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
+#
+# #load gt data
+# gt_pose = []
+f_kitti = open(kitti_txt,'w')
+with open(gt_txt, 'r') as f_gt:
+    for line in f_gt.readlines():
+        if 'DJI_0017' not in line:
+            continue
+        pose = [float(v) for v in line.strip().split(' ')[1:]]
+        # print(pose)
+        xyz = np.array(pose[:3]).reshape(-1,1)
+        wpqr = np.append(pose[4:], pose[3])
+        # print(xyz, wpqr)
+        r = R.from_quat(wpqr)
+        mat_r = r.as_matrix()
+        # print(mat_r)
+        mat_T = np.concatenate((mat_r, xyz), 1).flatten()
+        # print(mat_T)
+        t_str = ' '.join([str(v) for v in mat_T])
+        # print(t_str)
+        f_kitti.write(t_str + '\n')
+        # break
+f_kitti.close()
