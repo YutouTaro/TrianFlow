@@ -112,8 +112,8 @@
 from matplotlib import pyplot as plt
 import numpy as np
 # file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\00_kitti_pose.txt'
-file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
-# file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
+# file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
+file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
 
 fontsize_ = 20
 fig = plt.figure()
@@ -127,12 +127,12 @@ with open(file, 'r') as f:
         # plt.plot(pose[3], pose[7], label='gt')
         # print(pose[3], pose[7])
 pose = np.array(pose)
-plt.plot(pose[:,1], pose[:,2], label='gt')
+plt.plot(pose[:,1], pose[:,2], label='est')
 plt.legend(loc="upper right", prop={'size': fontsize_})
 plt.xticks(fontsize=fontsize_)
 plt.yticks(fontsize=fontsize_)
 plt.xlabel('x (m)', fontsize=fontsize_)
 plt.ylabel('y (m)', fontsize=fontsize_)
 fig.set_size_inches(10, 10)
-plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\c_yz_plot.pdf", bbox_inches='tight', pad_inches=0)
+plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\d_yz_plot.pdf", bbox_inches='tight', pad_inches=0)
 # plt.show()
