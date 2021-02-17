@@ -224,7 +224,9 @@ class KittiEvalOdom():
         plt.ylabel('z (m)', fontsize=fontsize_)
         fig.set_size_inches(10, 10)
         png_title = "sequence_"+(seq)
-        plt.savefig(self.plot_path_dir + "/" + png_title + ".pdf", bbox_inches='tight', pad_inches=0)
+        fig_name = self.plot_path_dir + "/" + png_title + ".pdf"
+        plt.savefig(fig_name, bbox_inches='tight', pad_inches=0)
+        print('figure saved to \n\t{}'.format(fig_name))
         # plt.show()
 
     def compute_segment_error(self, seq_errs):
