@@ -130,15 +130,15 @@ def plot_from_kitti():
             # plt.plot(pose[3], pose[7], label='gt')
             # print(pose[3], pose[7])
     pose = np.array(pose)
-    plt.plot(pose[:,0], pose[:,1], label='est')
+    plt.plot(pose[:,0], pose[:,2], label='est')
     plt.legend(loc="upper right", prop={'size': fontsize_})
     plt.xticks(fontsize=fontsize_)
     plt.yticks(fontsize=fontsize_)
     plt.xlabel('x (m)', fontsize=fontsize_)
     plt.ylabel('y (m)', fontsize=fontsize_)
     fig.set_size_inches(10, 10)
-    plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\d_yz_plot.pdf", bbox_inches='tight', pad_inches=0)
-    # plt.show()
+    # plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\d_xz_plot.pdf", bbox_inches='tight', pad_inches=0)
+    plt.show()
 
 # def generate_image_from_video():
 #     ### generate image sequence from video (imcompleted) use the code in playAroundImg.py
@@ -162,6 +162,25 @@ def plot_from_kitti():
 #         frame_count += 1
 #         success, image = vidcap.read()
 
+def downsample_traj():
+    # downsample the predicted traj
+    # as the image freq is 50, while pose is 10
+    downsample_file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017_2000_50fps.txt'
+    traj_file = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
+    with open(downsample_file, 'r') as fin:
+        lines = [line.strip() for line in fin.readlines() if '=' not in line]
+    print('found {} lines in \n\t{}.'.format(len(lines), downsample_file))
+
+    idx_start = 0
+    idx_end = len(lines)
+    freq = 5
+    lines = lines[idx_start:idx_end:freq]
+    with open(traj_file, 'w') as fout:
+        for line in lines:
+            fout.write(line+'\n')
+    print("wrote {} lines to \n\t{}".format(len(lines), traj_file))
+
 if __name__ == '__main__':
     # generate_image_from_video()
     plot_from_kitti()
+    # downsample_traj()
