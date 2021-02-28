@@ -295,7 +295,6 @@ class KittiEvalOdom():
 
         poses_result = self.loadPoses(result_txt)
         poses_gt = self.loadPoses(self.gt_txt)
-
         # Pose alignment to first frame
         idx_0 = sorted(list(poses_result.keys()))[0]
         pred_0 = poses_result[idx_0]
@@ -344,13 +343,33 @@ class KittiEvalOdom():
         ave_r_errs.append(ave_r_err)
 
         # Plotting
-        self.plotPath(seq, poses_gt, poses_result)    
+        self.plotPath(seq, poses_gt, poses_result)
+
+        # output pose_gt and poses_result
+        self.writePose(poses_gt, isGT=True)
+        self.writePose(poses_result, isGT=False)
+
+        scale_txt = os.path.join(result_txt, os.pardir, 'scale_{}.txt'.format(args.seq))
+        # print(os.path.abspath(scale_txt))
+        with open(scale_txt, 'w') as fscale:
+            fscale.write('{}'.format(scale))
 
         print("-------------------- For Copying ------------------------------")
         for i in range(len(ave_t_errs)):
             print("{0:.2f}".format(ave_t_errs[i]*100))
             print("{0:.2f}".format(ave_r_errs[i]/np.pi*180*100))
+        print('scale = \n\t{}'.format(scale))
 
+    def writePose(self, poses, isGT=True):
+        dir_aligned = os.path.join(args.result_txt, os.pardir, 'aligned')
+        if isGT:
+            filename = '{}_gt.txt'.format(args.seq)
+        else:
+            filename = '{}_pred.txt'.format(args.seq)
+        with open(os.path.join(dir_aligned, filename),'w') as fin:
+            for idx in sorted(poses.keys()):
+                pose = poses[idx]
+                fin.write('{} {} {}\n'.format(pose[0,3], pose[1,3], pose[2,3]))
 
 
 if __name__ == '__main__':

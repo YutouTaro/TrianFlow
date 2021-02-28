@@ -12,8 +12,11 @@ python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\
 python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\00\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\00.txt --seq 00
 
 python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-NTU-PC.yaml --gpu 0 --traj_save_dir_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --sequences_root_dir D:\Datasets\Pioneer\dataset\sequences --sequence DJI_0017 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth
-python .\core\evaluation\eval_odom.py --gt_txt D:\GoogleDrive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt --result_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --seq DJI_0017
+#python .\core\evaluation\eval_odom.py --gt_txt D:\GoogleDrive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt --result_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt --seq DJI_0017
 
+# paper
+python .\core\evaluation\eval_odom.py --gt_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017\dataset_kitti.txt --result_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0017\DJI_0017_50fps.txt --seq DJI_0017
+python .\core\evaluation\eval_odom.py --gt_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0024\dataset_kitti.txt --result_txt D:\GoogleDrive\datasets\Pioneer\NTU\traj_save\DJI_0024\DJI_0024_50fps.txt --seq DJI_0024
 =====================================================================
 
 only colored left image is used
@@ -96,3 +99,6 @@ PWC_tf - pwc_tf.py
 (adopted from PWC-Net)
     * correlation: 将两张feature map进行相关性计算
     * warp: 在第l层，我们使用第l+1层的2倍上采样流将img2的特征向img1扭曲
+
+
+python infer_vo.py --config_file D:\GoogleDrive\datasets\kitti\TrianFlow\config\odo-PC.yaml --gpu 0 --traj_save_dir_txt D:\Datasets\kitti\dataset\sequences\traj_save\02.txt --sequences_root_dir D:\Datasets\kitti\dataset\sequences --sequence 02 --pretrained_model D:\GoogleDrive\datasets\kitti\TrianFlow\kitti_odo.pth & python .\core\evaluation\eval_odom.py --gt_txt D:\Datasets\kitti\dataset\sequences\02\poses.txt --result_txt D:\Datasets\kitti\dataset\sequences\traj_save\02.txt --seq 02

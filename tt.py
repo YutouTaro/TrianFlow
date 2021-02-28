@@ -76,39 +76,45 @@ def copy_data_from_gdrive():
                     dir_gdrive_folder = join(dir_gdrive_date_drive, folder)
                     copy_files_in_folder(dir_data_folder, dir_gdrive_folder)
 
-def gt_NTU2kitti():
+def gt_NTU2kitti(vid):
 ### NTU dataset ground truth to kitti format (flattened 3*4 matrix)
     import numpy as np
     from scipy.spatial.transform import Rotation as R
     # r = R.from_quat([1,0,0,0])
     # print(r.as_matrix())
 
-    gt_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_all.txt'
-    kitti_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\dataset_kitti.txt'
+    gt_txt = 'D:/GoogleDrive/datasets/Pioneer/NTU/'+ vid + "/dataset_all.txt"
+    kitti_txt = 'D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/' + vid + '/dataset_kitti.txt'
     # # result_txt = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\traj_save\DJI_0017.txt'
     #
     # #load gt data
     # gt_pose = []
     f_kitti = open(kitti_txt,'w')
+    firstline = True
     with open(gt_txt, 'r') as f_gt:
         for line in f_gt.readlines():
-            if 'DJI_0017' not in line:
+            if 'DJI_' not in line:
                 continue
-            pose = [float(v) for v in line.strip().split(' ')[1:]]
-            # print(pose)
-            xyz = np.array(pose[:3]).reshape(-1,1)
-            wpqr = np.append(pose[4:], pose[3])
-            # print(xyz, wpqr)
-            r = R.from_quat(wpqr)
-            mat_r = r.as_matrix()
-            # print(mat_r)
-            mat_T = np.concatenate((mat_r, xyz), 1).flatten()
-            # print(mat_T)
-            t_str = ' '.join([str(v) for v in mat_T])
-            # print(t_str)
-            f_kitti.write(t_str + '\n')
+            if firstline:
+                f_kitti.write('1. 0. 0. 0. 0. 1. 0. 0. 0. 0. 1. 0.\n')
+                firstline = False
+            else:
+                pose = [float(v) for v in line.strip().split(' ')[1:]]
+                # print(pose)
+                xyz = np.array(pose[:3]).reshape(-1,1)
+                wpqr = np.append(pose[4:], pose[3])
+                # print(xyz, wpqr)
+                r = R.from_quat(wpqr)
+                mat_r = r.as_matrix()
+                # print(mat_r)
+                mat_T = np.concatenate((mat_r, xyz), 1).flatten()
+                # print(mat_T)
+                t_str = ' '.join([str(v) for v in mat_T])
+                # print(t_str)
+                f_kitti.write(t_str + '\n')
             # break
     f_kitti.close()
+    print('kitti gt file saved to \n\t{}'.format(kitti_txt))
 
 def plot_from_kitti():
 ### plot traj from kitti format log
@@ -130,15 +136,15 @@ def plot_from_kitti():
             # plt.plot(pose[3], pose[7], label='gt')
             # print(pose[3], pose[7])
     pose = np.array(pose)
-    plt.plot(pose[:,0], pose[:,2], label='est')
+    plt.plot(pose[:,0], pose[:,1], label='est')
     plt.legend(loc="upper right", prop={'size': fontsize_})
     plt.xticks(fontsize=fontsize_)
     plt.yticks(fontsize=fontsize_)
     plt.xlabel('x (m)', fontsize=fontsize_)
     plt.ylabel('y (m)', fontsize=fontsize_)
     fig.set_size_inches(10, 10)
-    # plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\d_xz_plot.pdf", bbox_inches='tight', pad_inches=0)
-    plt.show()
+    plt.savefig(r"C:\Users\kxhyu\Google Drive\datasets\Pioneer\NTU\DJI_0017\d_yz_plot.pdf", bbox_inches='tight', pad_inches=0)
+    # plt.show()
 
 # def generate_image_from_video():
 #     ### generate image sequence from video (imcompleted) use the code in playAroundImg.py
@@ -162,6 +168,44 @@ def plot_from_kitti():
 #         frame_count += 1
 #         success, image = vidcap.read()
 
+def manage_files():
+    # check the files in the folder, for xxx(1).xx files, if is origin file exists, remove. otherwise, rename with no '(1)'
+    import os
+    dir_folder = r'D:\GoogleDrive\datasets\Pioneer\NTU\DJI_0017'
+    filenames = [file for file in os.listdir(dir_folder) if '.png' in file ]
+    for file in filenames:
+        if ' (1)' in file:
+            path_file = os.path.join(dir_folder, file)
+            origin_name = file.replace(' (1)', '')
+            if origin_name in filenames:
+                os.remove(path_file)
+                print('remove {}'.format(file))
+            else:
+                path_newname = os.path.join(dir_folder, origin_name)
+                os.rename(path_file, path_newname)
+                print('rename {} to {}'.format(file, origin_name))
+
+def downsample_pred(vid):
+    # downsample the file of prediction to the same frequency of the gt readings
+    import os
+
+    path_file = 'D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/' + vid + '/' + vid + '.txt'
+    dir_file, filename = os.path.split(path_file)
+
+    with open(path_file, 'r') as fin:
+        lines = fin.readlines()
+    numLinesTotal = len(lines)
+    lines = lines[::5]
+    numLinesDs = len(lines)
+    name, extention = filename.split('.')
+    # new_filename = '{}_50fps_{}to{}.{}'.format(name, numLinesTotal, numLinesDs, extention)
+    new_filename = filename.replace('.txt', '_50fps.txt')
+    path_file_ds = os.path.join(dir_file, new_filename)
+    with open(path_file_ds, 'w') as fout:
+        for line in lines:
+            fout.write(line)
+    print('downsampled file saved to \n\t{}'.format(path_file_ds))
+
 def downsample_traj():
     # downsample the predicted traj
     # as the image freq is 50, while pose is 10
@@ -180,7 +224,15 @@ def downsample_traj():
             fout.write(line+'\n')
     print("wrote {} lines to \n\t{}".format(len(lines), traj_file))
 
+def formated_string(seq):
+    print('python infer_vo.py --config_file D:/GoogleDrive/datasets/kitti/TrianFlow/config/odo-PC.yaml --gpu 0 --traj_save_dir_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --sequences_root_dir D:/Datasets/kitti/dataset/sequences --sequence {0} --pretrained_model D:/GoogleDrive/datasets/kitti/TrianFlow/kitti_odo.pth & python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
+
 if __name__ == '__main__':
     # generate_image_from_video()
-    plot_from_kitti()
-    # downsample_traj()
+    # plot_from_kitti()
+    # manage_files()
+
+    # vid = 'DJI_0024'
+    # gt_NTU2kitti(vid)
+    # downsample_pred(vid)
+    formated_string('12')

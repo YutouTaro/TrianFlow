@@ -100,7 +100,10 @@ class infer_vo():
         else:
             opentype = 'w'
         with open(self.log_pnp, opentype) as file_log:
-            file_log.write('\n' + '='*20 + '\n')
+            log_str = '\n{} seq {}\n'.format('='*20, args.sequence)
+            file_log.write(log_str)
+            # file_log.write('\n' + '='*20 + '\n')
+
 
 
         self.seq_id = seq_id
@@ -201,6 +204,11 @@ class infer_vo():
                 pnp_frames.append(i)
                 pnp_pose = self.solve_pose_pnp(depth_match[:,:2], depth_match[:,2:], depth1)
                 rel_pose = pnp_pose
+
+            # TODO filter large motion
+            # if np.linalg.norm(rel_pose[:3,3:]) > #some value, not 10, should be less#:
+                # possiblely caused by pure rotation
+
 
             global_pose[:3,3:] = np.matmul(global_pose[:3,:3], rel_pose[:3,3:]) + global_pose[:3,3:]
             global_pose[:3,:3] = np.matmul(global_pose[:3,:3], rel_pose[:3,:3])
