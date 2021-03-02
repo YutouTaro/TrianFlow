@@ -227,6 +227,20 @@ def downsample_traj():
 def formated_string(seq):
     print('python infer_vo.py --config_file D:/GoogleDrive/datasets/kitti/TrianFlow/config/odo-PC.yaml --gpu 0 --traj_save_dir_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --sequences_root_dir D:/Datasets/kitti/dataset/sequences --sequence {0} --pretrained_model D:/GoogleDrive/datasets/kitti/TrianFlow/kitti_odo.pth & python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
 
+def pose_data_to_velcotity():
+    import csv
+    from os.path import join
+    dir_data = r'C:\Users\kxhyu\Google Drive\datasets\Pioneer\ExportFlightRecords\DJIFlight1212-1220'
+    csvname = 'DJIFlightRecord_2020-12-12_[14-47-56].xlated.csv'
+    path_csv_in = join(dir_data, csvname)
+    with open(path_csv_in, 'r') as csvfile:
+        data_csv = csv.reader(csvfile, delimiter=',')
+        data = []
+        for line in data_csv:
+            data.append(line)
+    print('found {} lines from \n\t{}'.format(len(data)-1, csvname))
+
+
 if __name__ == '__main__':
     # generate_image_from_video()
     # plot_from_kitti()
