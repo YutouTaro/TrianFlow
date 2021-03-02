@@ -240,6 +240,70 @@ def pose_data_to_velcotity():
             data.append(line)
     print('found {} lines from \n\t{}'.format(len(data)-1, csvname))
 
+def trail_relative_pose_computation():
+    from scipy.spatial.transform import Rotation as R
+    import numpy as np
+    import random
+    # from matplotlib import pyplot as plt
+
+    # fig = plt.figure()
+    # ax = plt.gca()
+    # ax.set_aspect('equal')
+
+    # print('pose = [')
+    with open('./global_pose.txt', 'w') as fout:
+        Rg = R.identity()
+        tg = np.array([[0,0,0]]).T
+        pose = np.concatenate((Rg.as_matrix(), tg), axis=1)
+        for v in pose.reshape((-1,)):
+            fout.write('{} '.format(v))
+        fout.write('\n')
+        a = random.randrange(-12, 12)
+        for i in range(10):
+
+            # a = 2
+            print('{} '.format(a), end='')
+            Ri = R.from_rotvec(np.array([0,0,1]) * np.pi/12 * a)
+            ti = np.array([[0, 1, 0]]).T
+            Rg = Ri * Rg
+            tg = np.matmul(Ri.as_matrix(), tg) + ti
+            pose = np.concatenate((Rg.as_matrix(), tg), axis=1)
+            for v in pose.reshape((-1,)):
+                fout.write('{} '.format(v))
+            fout.write('\n')
+            # print(Rg.as_matrix())
+            # print(tg.T)
+            # for v in tg.reshape((-1,)):
+            #     print('{} '.format(v), end='')
+            # print(';')
+            # plt.plot(tg[0], tg[1])
+
+            # break
+    # print('];')
+    with open('./global_pose.txt', 'r') as fin:
+        lines = fin.readlines()
+
+    with open('./relative_pose.txt', 'w') as fout:
+        last_pose = None
+        for line in lines:
+            line = line.strip().split(' ')
+            assert len(line) == 12, 'Error in the number of elements! {}\n\t{}'.format(len(line), line)
+            line = [float(v) for v in line]
+            pose = np.array(line).reshape((3,4))
+            if last_pose is not None:
+                R1 = R.from_matrix(pose[:3, :3])
+                t1 = pose[:, 3:]
+                Ri = R1 * R0.inv()
+                ti = t1 - np.matmul(Ri.as_matrix(), t0)
+                # print(Ri.as_matrix())
+                # print(ti)
+                rel_pose = np.concatenate((Ri.as_matrix(), ti), axis=1)
+                for v in rel_pose.reshape((-1,)):
+                    fout.write('{:.2f} '.format(v))
+                fout.write('\n')
+            last_pose = np.copy(pose)
+            R0 = R.from_matrix(last_pose[:3,:3])
+            t0 = last_pose[:,3:]
 
 if __name__ == '__main__':
     # generate_image_from_video()
@@ -250,3 +314,4 @@ if __name__ == '__main__':
     # gt_NTU2kitti(vid)
     # downsample_pred(vid)
     formated_string('12')
+
