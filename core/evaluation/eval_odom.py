@@ -4,7 +4,7 @@ import numpy as np
 import os
 from glob import glob
 import pdb
-
+from scipy.spatial.transform import Rotation as R
 
 def scale_lse_solver(X, Y):
     """Least-sqaure-error solver
@@ -345,9 +345,9 @@ class KittiEvalOdom():
         # Plotting
         self.plotPath(seq, poses_gt, poses_result)
 
-        # output pose_gt and poses_result
-        self.writePose(poses_gt, isGT=True)
-        self.writePose(poses_result, isGT=False)
+        # output the relative motion of pose_gt and poses_result
+        self.writeRelPose(poses_gt, isGT=True)
+        self.writeRelPose(poses_result, isGT=False)
 
         scale_txt = os.path.join(result_txt, os.pardir, 'scale_{}.txt'.format(args.seq))
         # print(os.path.abspath(scale_txt))
@@ -366,11 +366,33 @@ class KittiEvalOdom():
             filename = '{}_gt.txt'.format(args.seq)
         else:
             filename = '{}_pred.txt'.format(args.seq)
-        with open(os.path.join(dir_aligned, filename),'w') as fin:
+        with open(os.path.join(dir_aligned, filename),'w') as fout:
             for idx in sorted(poses.keys()):
                 pose = poses[idx]
-                fin.write('{} {} {}\n'.format(pose[0,3], pose[1,3], pose[2,3]))
+                fout.write('{} {} {}\n'.format(pose[0,3], pose[1,3], pose[2,3]))
 
+    def writeRelPose(self, poses, isGT=True):
+        dir_aligned = os.path.join(args.result_txt, os.pardir, 'aligned')
+        if isGT:
+            filename = 'rel_{}_gt.txt'.format(args.seq)
+        else:
+            filename = 'rel_{}_pred.txt'.format(args.seq)
+        with open(os.path.join(dir_aligned, filename), 'w') as fout:
+            last_pose = None
+            for idx in sorted(poses.keys()):
+                pose = poses[idx]
+                if last_pose is not None:
+                    R1 = R.from_matrix(pose[:3,:3])
+                    t1 = pose[:,3:]
+                    Ri = R1 * R0.inv()
+                    ti = t1 - np.matmul(Ri.as_matrix(), t0)
+                    rel_pose = np.concatenate((Ri.as_matrix(), ti), axis=1)
+                    for v in rel_pose.reshape((-1,)):
+                        fout.write('{} '.format(v))
+                    fout.write('\n')
+                last_pose = np.copy(pose)
+                R0 = R.from_matrix(last_pose[:3,:3])
+                t0 = last_pose[:,3:]
 
 if __name__ == '__main__':
     import argparse
