@@ -9,3 +9,5 @@ core/networks/structures/__pycache__/net_utils.cpython-36.pyc
 __pycache__/test.cpython-36.pyc
 *.pyc
 .idea/inspectionProfiles/Project_Default.xml
+global_pose.txt
+relative_pose.txt
