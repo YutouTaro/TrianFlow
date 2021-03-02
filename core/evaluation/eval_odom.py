@@ -349,7 +349,7 @@ class KittiEvalOdom():
         self.writeRelPose(poses_gt, isGT=True)
         self.writeRelPose(poses_result, isGT=False)
 
-        scale_txt = os.path.join(result_txt, os.pardir, 'scale_{}.txt'.format(args.seq))
+        scale_txt = os.path.abspath(os.path.join(result_txt, os.pardir, 'scale_{}.txt'.format(args.seq)))
         # print(os.path.abspath(scale_txt))
         with open(scale_txt, 'w') as fscale:
             fscale.write('{}'.format(scale))
@@ -361,7 +361,7 @@ class KittiEvalOdom():
         print('scale = \n\t{}'.format(scale))
 
     def writePose(self, poses, isGT=True):
-        dir_aligned = os.path.join(args.result_txt, os.pardir, 'aligned')
+        dir_aligned = os.path.abspath(os.path.join(args.result_txt, os.pardir, 'aligned'))
         if isGT:
             filename = '{}_gt.txt'.format(args.seq)
         else:
