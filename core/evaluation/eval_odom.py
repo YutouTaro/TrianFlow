@@ -383,7 +383,7 @@ class KittiEvalOdom():
                 pose = poses[idx]
                 if last_pose is not None:
                     R1 = R.from_matrix(pose[:3,:3])
-                    t1 = pose[:,3:]
+                    t1 = pose[:3,3:]
                     Ri = R1 * R0.inv()
                     ti = t1 - np.matmul(Ri.as_matrix(), t0)
                     rel_pose = np.concatenate((Ri.as_matrix(), ti), axis=1)
@@ -392,7 +392,7 @@ class KittiEvalOdom():
                     fout.write('\n')
                 last_pose = np.copy(pose)
                 R0 = R.from_matrix(last_pose[:3,:3])
-                t0 = last_pose[:,3:]
+                t0 = last_pose[:3,3:]
 
 if __name__ == '__main__':
     import argparse
