@@ -229,8 +229,9 @@ def formated_string(seq, isKitti=True):
         # print('python infer_vo.py --config_file D:/GoogleDrive/datasets/kitti/TrianFlow/config/odo-PC.yaml --gpu 0 --traj_save_dir_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --sequences_root_dir D:/Datasets/kitti/dataset/sequences --sequence {0} --pretrained_model D:/GoogleDrive/datasets/kitti/TrianFlow/kitti_odo.pth & python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
         print('python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
     else:
+        seq = seq.zfill(4)
         print(
-            'python ./core/evaluation/eval_odom.py --gt_txt D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/DJI_00{0}/dataset_kitti.txt --result_txt D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/DJI_00{0}/DJI_00{0}_50fps.txt --seq DJI_00{0}'.format(
+            'python ./core/evaluation/eval_odom.py --gt_txt D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/DJI_{0}/dataset_kitti.txt --result_txt D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/DJI_{0}/DJI_{0}_50fps.txt --seq DJI_{0}'.format(
                 seq))
 
 def pose_data_to_velcotity():
@@ -323,9 +324,11 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='auxiliary functions')
-    parser.add_argument('--seq', type=str, required=True, help="sequences to be used")
+    parser.add_argument('--seq', type=str, required=True, help="sequence to be used")
+    parser.add_argument('--dataset', '-d', type=str, default='kitti', choices=['kitti', 'ntu'], help='which dataset is the sequence belongs to')
     # parser.add_argument('--result_txt', type=str, required=True, help="Result directory")
     # parser.add_argument('--seq', type=str, help="sequences to be evaluated", default='09')
     args = parser.parse_args()
 
-    formated_string(args.seq, True)
+    iskitti = (args.dataset == 'kitti')
+    formated_string(args.seq, iskitti)
