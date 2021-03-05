@@ -226,11 +226,9 @@ def downsample_traj():
 
 def formated_string(seq, isKitti=True):
     if isKitti:
-        print('python infer_vo.py --config_file D:/GoogleDrive/datasets/kitti/TrianFlow/config/odo-PC.yaml --gpu 0 --traj_save_dir_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --sequences_root_dir D:/Datasets/kitti/dataset/sequences --sequence {0} --pretrained_model D:/GoogleDrive/datasets/kitti/TrianFlow/kitti_odo.pth & python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
+        # print('python infer_vo.py --config_file D:/GoogleDrive/datasets/kitti/TrianFlow/config/odo-PC.yaml --gpu 0 --traj_save_dir_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --sequences_root_dir D:/Datasets/kitti/dataset/sequences --sequence {0} --pretrained_model D:/GoogleDrive/datasets/kitti/TrianFlow/kitti_odo.pth & python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
+        print('python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(seq))
     else:
-        # print(
-        #     'python infer_vo.py --config_file D:/GoogleDrive/datasets/kitti/TrianFlow/config/odo-PC.yaml --gpu 0 --traj_save_dir_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --sequences_root_dir D:/Datasets/kitti/dataset/sequences --sequence {0} --pretrained_model D:/GoogleDrive/datasets/kitti/TrianFlow/kitti_odo.pth & python ./core/evaluation/eval_odom.py --gt_txt D:/Datasets/kitti/dataset/sequences/{0}/poses.txt --result_txt D:/Datasets/kitti/dataset/sequences/traj_save/{0}.txt --seq {0}'.format(
-        #         seq))
         print(
             'python ./core/evaluation/eval_odom.py --gt_txt D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/DJI_00{0}/dataset_kitti.txt --result_txt D:/GoogleDrive/datasets/Pioneer/NTU/traj_save/DJI_00{0}/DJI_00{0}_50fps.txt --seq DJI_00{0}'.format(
                 seq))
@@ -322,4 +320,12 @@ if __name__ == '__main__':
     # gt_NTU2kitti(vid)
     # downsample_pred(vid)
 
-    formated_string('21', True)
+    import argparse
+
+    parser = argparse.ArgumentParser(description='auxiliary functions')
+    parser.add_argument('--seq', type=str, required=True, help="sequences to be used")
+    # parser.add_argument('--result_txt', type=str, required=True, help="Result directory")
+    # parser.add_argument('--seq', type=str, help="sequences to be evaluated", default='09')
+    args = parser.parse_args()
+
+    formated_string(args.seq, True)
